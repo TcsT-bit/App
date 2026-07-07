@@ -343,7 +343,7 @@ function renderClientNav(){
 
 function searchClient(){
   const query = document.getElementById('clientSearch').value.toLowerCase();
-  const cards = document.querySelectorAll('#clientContent.card'); // FIXED
+  const cards = document.querySelectorAll('#clientContent.card');
   cards.forEach(card=>{
     const text = card.innerText.toLowerCase();
     if(query === '' || text.includes(query)){
@@ -596,8 +596,7 @@ function renderInvoice(){
     <div class="invoice-header">
       <div>
         <h2 style="color:var(--accent2)">${CONTACT.company}</h2>
-        <p>${CONTACT.location}</p>
-        <p>Tel: ${CONTACT.thabo} | ${CONTACT.email}</p>
+        <p>${CONTACT.location}</p><p>Tel: ${CONTACT.thabo} | ${CONTACT.email}</p>
         <p><b>Reg:</b> ${CONTACT.reg}</p>
       </div>
       <div style="text-align:right">
@@ -649,31 +648,35 @@ function sendInvoiceWhatsApp(total){
 function installPWA(){
   if(deferredPrompt){
     deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(()=>{document.getElementById('pwaBanner').style.display='none'});
+    deferredPrompt.userChoice.then(()=>{document.getElementById('pwaBanner').style.display='none'; localStorage.setItem('pwa_installed','1')});
+  } else {
+    // Fallback for iOS / browsers that don't support beforeinstallprompt
+    const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    if(isIOS){
+      alert('To Install: Tap Share button ⬆️ → "Add to Home Screen"');
+    } else {
+      alert('To Install: Click the 3 dots ⋮ in Chrome → "Install App" or "Add to Home Screen"');
+    }
+    document.getElementById('pwaBanner').style.display='none';
   }
 }
 
 window.addEventListener('beforeinstallprompt', (e)=>{
   e.preventDefault();
   deferredPrompt = e;
-  if(window.location.hash==='#client') {
-    setTimeout(()=>{document.getElementById('pwaBanner').style.display='block'}, 3000);
+  if(window.location.hash==='#client' && !localStorage.getItem('pwa_installed')) {
+    setTimeout(()=>{document.getElementById('pwaBanner').style.display='block'}, 2000);
   }
 });
 
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register(URL.createObjectURL(new Blob([`
-    self.addEventListener('install', e=>{self.skipWaiting();});
-    self.addEventListener('fetch', e=>{});
-  `],{type:'text/javascript'})));
-}
-// ========== END PWA SYSTEM ==========
-
-// ========== AUTO-LOCK ON REFRESH ==========
+// FORCE SHOW BANNER ON CLIENT LINK IF NOT INSTALLED YET
 window.addEventListener('load', ()=>{
   const mode = localStorage.getItem('twinz_mode');
   if(window.location.hash==='#client' || mode==='client'){
     enterClientMode();
+    if(!localStorage.getItem('pwa_installed')){
+      setTimeout(()=>{document.getElementById('pwaBanner').style.display='block'}, 4000);
+    }
   } else if(mode==='admin'){
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('app').style.display='block';
@@ -681,6 +684,14 @@ window.addEventListener('load', ()=>{
     renderContent();
   }
 });
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([`
+    self.addEventListener('install', e=>{self.skipWaiting();});
+    self.addEventListener('fetch', e=>{});
+  `],{type:'text/javascript'}))).catch(()=>{});
+}
+// ========== END PWA SYSTEM ==========
 </script>
 </body>
-</html>
+  </html>
