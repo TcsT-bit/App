@@ -300,12 +300,15 @@ function addProduct(catId){
   const title = document.getElementById('pTitle'+catId).value;
   const price = document.getElementById('pPrice'+catId).value;
   const desc = document.getElementById('pDesc'+catId).value;
+  const imgLink = document.getElementById('pImg'+catId).value; // NEW
   if(!title ||!price){ alert('Enter Title and Price'); return; }
   const cat = CATEGORIES.find(c=>c.id===catId);
-  cat.products.push({id:Date.now(), title, price, desc, images:[], outOfStock:false});
+  const newImages = imgLink.trim()? [imgLink.trim()] : []; // NEW
+  cat.products.push({id:Date.now(), title, price, desc, images:newImages, outOfStock:false}); // UPDATED
   document.getElementById('pTitle'+catId).value='';
   document.getElementById('pPrice'+catId).value='';
   document.getElementById('pDesc'+catId).value='';
+  document.getElementById('pImg'+catId).value=''; // NEW
   renderContent();
 }
 
@@ -386,6 +389,7 @@ function renderContent(){
       <input id="pTitle${cat.id}" placeholder="Product Title e.g. BMW N47 Engine">
       <input id="pPrice${cat.id}" placeholder="Price e.g. R25000 or Quote">
       <textarea id="pDesc${cat.id}" placeholder="Description, Specs, Vehicle Fitment"></textarea>
+      <input id="pImg${cat.id}" placeholder="Paste Catbox.moe Image Link Here - Optional"> <!-- NEW -->
       <button class="btn" onclick="addProduct('${cat.id}')">+ Add Product</button>
     </div>
     `:''}
