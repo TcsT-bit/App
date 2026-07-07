@@ -117,11 +117,18 @@
   }
 .img-preview:hover{border-color:var(--accent);box-shadow:var(--glow)}
 
-  /* NEW HUB GALLERY */
- .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px}
- .gallery-item{position:relative;border-radius:10px;overflow:hidden;border:2px solid rgba(59,130,246,0.3)}
- .gallery-item img{width:100%;height:120px;object-fit:cover;display:block}
- .gallery-item.del-btn{position:absolute;top:4px;right:4px;background:var(--danger);border:none;color:#fff;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:0.8rem}
+  /* PRODUCT HUB STYLES */
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;margin-top:15px}
+.product-card{background:rgba(31,41,55,0.6);border:1px solid rgba(59,130,246,0.2);border-radius:12px;padding:12px;position:relative}
+.product-card img{width:100%;height:140px;object-fit:cover;border-radius:8px}
+.product-card h4{margin:8px 0;font-size:1rem;color:var(--accent)}
+.product-card.price{font-size:1.1rem}
+.product-card.out-of-stock{opacity:0.5}
+.product-actions{display:flex;gap:6px;margin-top:8px}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:10px}
+.gallery-item{position:relative;border-radius:8px;overflow:hidden;border:2px solid rgba(59,130,246,0.3)}
+.gallery-item img{width:100%;height:100px;object-fit:cover;display:block}
+.gallery-item.del-btn{position:absolute;top:4px;right:4px;background:var(--danger);border:none;color:#fff;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:0.7rem}
 
 .nav-tabs{
     display:flex;gap:10px;overflow-x:auto;padding:12px 0;
@@ -192,7 +199,7 @@
 </div>
 
 <div id="clientView" style="display:none">
-  <header><h1>TWINZ SERVICES</h1><p>Request a Quote</p></header>
+  <header><h1>TWINZ SERVICES</h1><p>Browse All 7 Categories</p></header>
   <div class="container" id="clientContent"></div>
 </div>
 
@@ -202,43 +209,43 @@ const CATEGORIES = [
     id:'diagnostics', name:'Vehicle Diagnostics',
     desc:'All Brand Diagnostics Software. JLR, VW, AUDI, BENZ, BMW, TOYOTA, ISUZU, FORD, MAZDA, NISSAN + more',
     features:['Full System Scan','DTC Clear','Service Reset','DPF Regen','EPB','SAS','Key Programming','Twinz Master Scanner V25'],
-    price:'From R450', outOfStock:false, images:[]
+    price:'From R450', outOfStock:false, products:[]
   },
   {
     id:'internet', name:'Wireless Internet',
     desc:'Unlimited Fibre, LTE, Installation, Business WiFi, Router Sales, 24/7 Support',
     features:['Unlimited Data','Fast Installation','Business Packages'],
-    price:'From R350/month', outOfStock:false, images:[]
+    price:'From R350/month', outOfStock:false, products:[]
   },
   {
     id:'web', name:'Web Development',
     desc:'Business Websites, Landing Pages, E-commerce, Portfolio Sites',
     features:['Mobile-first','SEO','Hosting Setup'],
-    price:'From R3000', note:'7-14 Days Delivery', outOfStock:false, images:[]
+    price:'From R3000', note:'7-14 Days Delivery', outOfStock:false, products:[]
   },
   {
     id:'app', name:'App Development',
     desc:'Android + iOS Apps, Business Apps, Admin Portals, Booking Systems',
     features:['React','Flutter','Firebase','ALL PERMISSIONS GRANTED'],
-    price:'From R5000', note:'Custom quotes', outOfStock:false, images:[]
+    price:'From R5000', note:'Custom quotes', outOfStock:false, products:[]
   },
   {
     id:'parts', name:'Genuine Vehicle Parts',
     desc:'Engines, Gearboxes, Suspension, Electronics',
     features:['BMW','BENZ','AUDI','VW','JAGUAR','LAND ROVER + MORE'],
-    price:'Quote on Request', outOfStock:false, images:[]
+    price:'Quote on Request', outOfStock:false, products:[]
   },
   {
     id:'workshop', name:'Workshop Partnerships',
     desc:'Supply parts to garages and workshops nationwide',
     features:['Fleet diagnostics','Bulk pricing','Nationwide SA'],
-    price:'Contact for Rates', outOfStock:false, images:[]
+    price:'Contact for Rates', outOfStock:false, products:[]
   },
   {
     id:'food', name:'Food Supply',
     desc:'Wholesale food supply for businesses, restaurants and events',
     features:['Bulk Orders','Fresh Produce','Nationwide Delivery','Custom Quotes'],
-    price:'Quote on Request', outOfStock:false, images:[]
+    price:'Quote on Request', outOfStock:false, products:[]
   }
 ];
 
@@ -289,27 +296,74 @@ function toggleStock(id){
   renderContent();
 }
 
-function saveManualImage(id){
-  const input = document.getElementById('manual'+id);
-  const cat = CATEGORIES.find(c=>c.id===id);
+function addProduct(catId){
+  const title = document.getElementById('pTitle'+catId).value;
+  const price = document.getElementById('pPrice'+catId).value;
+  const desc = document.getElementById('pDesc'+catId).value;
+  if(!title ||!price){ alert('Enter Title and Price'); return; }
+  const cat = CATEGORIES.find(c=>c.id===catId);
+  cat.products.push({id:Date.now(), title, price, desc, images:[], outOfStock:false});
+  document.getElementById('pTitle'+catId).value='';
+  document.getElementById('pPrice'+catId).value='';
+  document.getElementById('pDesc'+catId).value='';
+  renderContent();
+}
+
+function deleteProduct(catId, pId){
+  CATEGORIES.find(c=>c.id===catId).products = CATEGORIES.find(c=>c.id===catId).products.filter(p=>p.id!==pId);
+  renderContent();
+}
+
+function toggleProductStock(catId, pId){
+  const p = CATEGORIES.find(c=>c.id===catId).products.find(p=>p.id===pId);
+  p.outOfStock =!p.outOfStock;
+  renderContent();
+}
+
+function saveManualImage(catId, pId){
+  const input = document.getElementById('manual'+catId+pId);
+  const p = CATEGORIES.find(c=>c.id===catId).products.find(p=>p.id===pId);
   if(input.value.trim()){
-    cat.images.push(input.value.trim());
+    p.images.push(input.value.trim());
     input.value='';
     renderContent();
   }
 }
 
-function deleteImage(catId, index){
-  CATEGORIES.find(c=>c.id===catId).images.splice(index,1);
+function deleteImage(catId, pId, index){
+  CATEGORIES.find(c=>c.id===catId).products.find(p=>p.id===pId).images.splice(index,1);
   renderContent();
 }
 
-function renderGallery(cat){
-  if(cat.images.length===0) return '<p style="color:var(--muted)">No images yet. Upload to build your hub.</p>';
-  return `<div class="gallery-grid">${cat.images.map((img,i)=>`
-    <div class="gallery-item">
-      <img src="${img}">
-      ${currentRole!=='Reception'?`<button class="del-btn" onclick="deleteImage('${cat.id}',${i})">×</button>`:''}
+function renderProducts(cat){
+  if(cat.products.length===0) return '<p style="color:var(--muted)">No products yet. Add your first item below.</p>';
+  return `<div class="product-grid">${cat.products.map(p=>`
+    <div class="product-card ${p.outOfStock?'out-of-stock':''}">
+      ${p.images[0]?`<img src="${p.images[0]}">`:''}
+      <h4>${p.title}</h4>
+      <p style="color:var(--muted);font-size:0.85rem">${p.desc}</p>
+      <div class="price">${p.price}</div>
+      ${p.images.length>1?`<p style="color:var(--muted);font-size:0.8rem">${p.images.length} photos</p>`:''}
+
+      ${currentRole!=='Reception'?`
+      <div class="gallery-grid">${p.images.map((img,i)=>`
+        <div class="gallery-item">
+          <img src="${img}">
+          <button class="del-btn" onclick="deleteImage('${cat.id}',${p.id},${i})">×</button>
+        </div>
+      `).join('')}</div>
+
+      <input type="file" id="file${cat.id}${p.id}" accept="image/*">
+      <button class="btn small" onclick="uploadToCatbox('${cat.id}',${p.id})">Upload Img</button>
+      <div class="manual-upload">
+        <input type="text" id="manual${cat.id}${p.id}" placeholder="Paste catbox link">
+        <button class="btn small" onclick="saveManualImage('${cat.id}',${p.id})">Add</button>
+      </div>
+      <div class="product-actions">
+        <button class="btn small" onclick="toggleProductStock('${cat.id}',${p.id})">${p.outOfStock?'In Stock':'Out Stock'}</button>
+        <button class="btn small danger" onclick="deleteProduct('${cat.id}',${p.id})">Delete</button>
+      </div>
+      `:''}
     </div>
   `).join('')}</div>`;
 }
@@ -318,24 +372,21 @@ function renderContent(){
   const cat = CATEGORIES[currentTab];
   let html = `<div class="card ${cat.outOfStock?'out-of-stock':''}">
     <h3>${cat.name}</h3>
-    ${cat.images[0]?`<img src="${cat.images[0]}" class="img-preview">`:''}
     <p>${cat.desc}</p>
     <ul>${cat.features.map(f=>`<li>${f}</li>`).join('')}</ul>
     <div class="price">${cat.price}</div>
     ${cat.note?`<p style="color:var(--muted);font-size:0.9rem">${cat.note}</p>`:''}
 
-    <h4 style="margin-top:16px">Job Gallery Hub - ${cat.images.length} Images</h4>
-    ${renderGallery(cat)}
+    <h4 style="margin-top:16px">Products Hub - ${cat.products.length} Items</h4>
+    ${renderProducts(cat)}
 
     ${currentRole!=='Reception'?`
-    <h4 style="margin-top:12px">Upload New Image</h4>
-    <input type="file" id="file${cat.id}" accept="image/*">
-    <button class="btn" onclick="uploadToCatbox('${cat.id}')">Upload to Catbox.moe</button>
-
-    <h4 style="margin-top:12px">Or Paste Catbox.moe Link Manually</h4>
-    <div class="manual-upload">
-      <input type="text" id="manual${cat.id}" placeholder="https://files.catbox.moe/xxxxxx.jpg">
-      <button class="btn" style="width:auto" onclick="saveManualImage('${cat.id}')">Add</button>
+    <div class="card" style="margin-top:15px">
+      <h4>Add New Product to ${cat.name}</h4>
+      <input id="pTitle${cat.id}" placeholder="Product Title e.g. BMW N47 Engine">
+      <input id="pPrice${cat.id}" placeholder="Price e.g. R25000 or Quote">
+      <textarea id="pDesc${cat.id}" placeholder="Description, Specs, Vehicle Fitment"></textarea>
+      <button class="btn" onclick="addProduct('${cat.id}')">+ Add Product</button>
     </div>
     `:''}
 
@@ -346,12 +397,12 @@ function renderContent(){
 
   if(currentRole==='CEO' || currentRole==='Manager'){
     html += `<div class="card">
-      <h3>Admin Controls - ${cat.name}</h3>
-      <input placeholder="Edit Price" value="${cat.price}" onchange="cat.price=this.value">
-      <textarea placeholder="Edit Description">${cat.desc}</textarea>
+      <h3>Category Controls - ${cat.name}</h3>
+      <input placeholder="Edit Category Price" value="${cat.price}" onchange="cat.price=this.value">
+      <textarea placeholder="Edit Category Description">${cat.desc}</textarea>
       <div class="toggle-switch">
         <input type="checkbox" id="stock${cat.id}" ${cat.outOfStock?'checked':''} onchange="toggleStock('${cat.id}')">
-        <label for="stock${cat.id}">Mark as Out of Stock</label>
+        <label for="stock${cat.id}">Mark Whole Category Out of Stock</label>
       </div>
       <button class="btn">Save Changes</button>
     </div>`;
@@ -360,8 +411,8 @@ function renderContent(){
   document.getElementById('content').innerHTML = html;
 }
 
-async function uploadToCatbox(id){
-  const fileInput = document.getElementById('file'+id);
+async function uploadToCatbox(catId, pId){
+  const fileInput = document.getElementById('file'+catId+pId);
   if(!fileInput.files[0]){ alert('Select a file first'); return; }
   const formData = new FormData();
   formData.append('reqtype','fileupload');
@@ -370,7 +421,7 @@ async function uploadToCatbox(id){
   try{
     const res = await fetch('https://catbox.moe/user/api.php',{method:'POST',body:formData});
     const url = await res.text();
-    CATEGORIES.find(c=>c.id===id).images.push(url);
+    CATEGORIES.find(c=>c.id===catId).products.find(p=>p.id===pId).images.push(url);
     fileInput.value='';
     renderContent();
     alert('Uploaded: '+url);
@@ -399,13 +450,22 @@ function copyLink(){
 function renderClient(){
   let html = CATEGORIES.filter(c=>!c.outOfStock).map(cat=>`
     <div class="card">
-      ${cat.images[0]?`<img src="${cat.images[0]}" class="img-preview">`:''}
       <h3>${cat.name}</h3>
       <p>${cat.desc}</p>
-      <div class="price">${cat.price}</div>
-      ${cat.images.length>1?`<p style="color:var(--muted);font-size:0.85rem">${cat.images.length} job photos in gallery</p>`:''}
-      <textarea placeholder="Your request for ${cat.name}"></textarea>
-      <button class="btn" onclick="alert('Request sent to TWINZ')">Request Quote</button>
+      ${cat.products.length>0?`<h4 style="margin-top:10px;color:var(--accent)">Products: ${cat.products.length}</h4>`:''}
+      <div class="product-grid">
+        ${cat.products.filter(p=>!p.outOfStock).map(p=>`
+          <div class="product-card">
+            ${p.images[0]?`<img src="${p.images[0]}">`:''}
+            <h4>${p.title}</h4>
+            <p style="color:var(--muted);font-size:0.85rem">${p.desc}</p>
+            <div class="price">${p.price}</div>
+            <textarea placeholder="Enquiry about ${p.title}"></textarea>
+            <button class="btn" onclick="alert('Enquiry sent to TWINZ')">Request Quote</button>
+          </div>
+        `).join('')}
+      </div>
+      ${cat.products.length===0?`<div class="price">${cat.price}</div><textarea placeholder="Your request for ${cat.name}"></textarea><button class="btn" onclick="alert('Request sent to TWINZ')">Request Quote</button>`:''}
     </div>
   `).join('');
 
