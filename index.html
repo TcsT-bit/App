@@ -84,6 +84,7 @@
 .btn:active{transform:translateY(0)}
 .btn.secondary{background:linear-gradient(135deg,var(--accent),#06b6d4);color:#000}
 .btn.danger{background:linear-gradient(135deg,var(--danger),#dc2626)}
+.btn.success{background:linear-gradient(135deg,var(--success),#059669)}
 .btn.small{width:auto;padding:6px 12px;font-size:0.8rem}
 
   input,textarea,select{
@@ -168,6 +169,14 @@
 .search-bar{width:100%;padding:14px;background:rgba(31,41,55,0.8);border:2px solid var(--accent);border-radius:12px;color:var(--text);font-size:1rem;margin-bottom:15px}
 .search-bar:focus{box-shadow:0 0 0 3px rgba(0,212,255,0.2)}
 .highlight{border:2px solid var(--warning)!important;box-shadow:0 0 15px rgba(251,191,36,0.4)}
+
+  /* INVOICE STYLES */
+.invoice-preview{background:#fff;color:#000;border-radius:12px;padding:20px;margin-top:15px}
+.invoice-header{display:flex;justify-content:space-between;border-bottom:3px solid var(--accent2);padding-bottom:10px;margin-bottom:15px}
+.invoice-table{width:100%;border-collapse:collapse;margin:15px 0}
+.invoice-table th{background:var(--accent2);color:#fff;padding:8px;text-align:left}
+.invoice-table td{padding:8px;border-bottom:1px solid #ddd}
+.invoice-totals{text-align:right;font-weight:800;font-size:1.2rem}
 </style>
 </head>
 <body>
@@ -194,6 +203,7 @@
     <span class="role-badge" id="roleBadge">CEO</span>
     <button class="btn" style="width:auto" onclick="logout()">Logout</button>
     <button class="btn secondary" style="width:auto" onclick="generateClientLink()">Generate Client Link</button>
+    <button class="btn success" style="width:auto" onclick="openInvoice()">🧾 Invoice</button> <!-- NEW -->
   </div>
 
   <div class="container">
@@ -202,6 +212,7 @@
       <div class="share-link" id="shareLink"></div>
       <button class="btn" onclick="copyLink()">Copy Link</button>
     </div>
+    <div id="invoiceBox" style="display:none" class="card"></div> <!-- NEW -->
     <div class="nav-tabs" id="tabs"></div>
     <div id="content"></div>
   </div>
@@ -267,12 +278,15 @@ const CONTACT = {
   thabo:'068 254 7352',
   thabang:'069 894 9596',
   location:'Greater Tubatse, Limpopo',
-  hours:'Mon - Sat | 8am - 6pm'
+  hours:'Mon - Sat | 8am - 6pm',
+  company:'TWINZ COOPERATE SERVICES PTY LTD', // NEW
+  reg:'2026/XXXXXX/07' // NEW
 };
 
 let currentRole = 'CEO';
 let currentTab = 0;
 let currentShareLink = '';
+let invoiceItems = []; // NEW
 
 function login(role){
   currentRole = role;
@@ -389,6 +403,7 @@ function renderProducts(cat){
       ${p.images.length>1?`<p style="color:var(--muted);font-size:0.8rem">${p.images.length} photos</p>`:''}
 
       ${currentRole!=='Reception'?`
+      <button class="btn small success" onclick="addToInvoice('${p.title}','${p.price}')">+ Add to Invoice</button> <!-- NEW -->
       <div class="gallery-grid">${p.images.map((img,i)=>`
         <div class="gallery-item">
           <img src="${img}">
@@ -531,6 +546,82 @@ function renderClient(){
 
   document.getElementById('clientContent').innerHTML = html;
 }
+
+// ========== NEW INVOICE SYSTEM ==========
+function openInvoice(){
+  document.getElementById('invoiceBox').style.display='block';
+  renderInvoice();
+}
+
+function addToInvoice(title, price){
+  const numPrice = parseFloat(price.replace(/[^0-9.]/g,'')) || 0;
+  invoiceItems.push({title, price:numPrice, qty:1});
+  renderInvoice();
+  alert(title+' added to Invoice');
+}
+
+function renderInvoice(){
+  const invNo = 'INV-'+Date.now().toString().slice(-6);
+  const date = new Date().toLocaleDateString('en-ZA');
+  let rows = invoiceItems.map((item,i)=>`
+    <tr>
+      <td>${i+1}</td><td>${item.title}</td><td>${item.qty}</td>
+      <td>R${item.price.toFixed(2)}</td><td>R${(item.price*item.qty).toFixed(2)}</td>
+    </tr>
+  `).join('');
+  const subtotal = invoiceItems.reduce((a,b)=>a+b.price*b.qty,0);
+  const vat = subtotal * 0.15;
+  const total = subtotal + vat;
+
+  let html = `<div class="invoice-preview" id="invoicePrint">
+    <div class="invoice-header">
+      <div>
+        <h2 style="color:var(--accent2)">${CONTACT.company}</h2>
+        <p>${CONTACT.location}</p>
+        <p>Tel: ${CONTACT.thabo} | ${CONTACT.email}</p>
+      </div>
+      <div style="text-align:right">
+        <h3>INVOICE</h3>
+        <p><b>No:</b> ${invNo}</p>
+        <p><b>Date:</b> ${date}</p>
+      </div>
+    </div>
+    <input placeholder="Client Name" id="invClient">
+    <input placeholder="Client Phone/Email" id="invContact">
+    <table class="invoice-table">
+      <tr><th>#</th><th>Description</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
+      ${rows || '<tr><td colspan=5>Add items from products</td></tr>'}
+    </table>
+    <div class="invoice-totals">
+      <p>Subtotal: R${subtotal.toFixed(2)}</p>
+      <p>VAT 15%: R${vat.toFixed(2)}</p>
+      <p style="color:var(--accent2)">TOTAL: R${total.toFixed(2)}</p>
+    </div>
+    <p><b>Banking:</b> FNB | Acc: 123456789 | Branch: 250655</p>
+    <p><b>Terms:</b> Payment due within 7 days. Goods remain property of TWINZ until paid in full.</p>
+  </div>
+  <div style="display:flex;gap:10px;margin-top:10px">
+    <button class="btn" onclick="downloadPDF()">Download PDF</button>
+    <button class="btn success" onclick="sendInvoiceWhatsApp(${total.toFixed(2)})">Send via WhatsApp</button>
+    <button class="btn danger" onclick="invoiceItems=[];renderInvoice()">Clear Invoice</button>
+  </div>`;
+  document.getElementById('invoiceBox').innerHTML = html;
+}
+
+function downloadPDF(){ // NEW
+  const printContent = document.getElementById('invoicePrint').innerHTML;
+  const win = window.open('','_blank');
+  win.document.write(`<html><head><title>Invoice</title><style>body{font-family:Arial;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #000;padding:8px}</style></head><body>${printContent}</body></html>`);
+  win.document.close();
+  win.print();
+}
+
+function sendInvoiceWhatsApp(total){ // NEW
+  const client = document.getElementById('invClient').value || 'Client';
+  const msg = `*${CONTACT.company}*%0AInvoice for: ${client}%0ATotal: R${total}%0A%0AThank you for choosing TWINZ. Payment within 7 days.`;
+  window.open(`https://wa.me/27682547352?text=${msg}`,'_blank');
+}
+// ========== END INVOICE SYSTEM ==========
 
 // Auto-open client view if #client in URL
 if(window.location.hash==='#client') enterClientMode();
