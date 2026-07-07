@@ -159,6 +159,15 @@
   ul{list-style:none;padding-left:0}
   ul li{padding:4px 0;padding-left:20px;position:relative}
   ul li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+
+  /* CLIENT NAV + SEARCH */
+.client-cat-nav{display:flex;gap:8px;overflow-x:auto;padding:15px 0;margin-bottom:10px;scrollbar-width:none}
+.client-cat-nav::-webkit-scrollbar{display:none}
+.client-cat-btn{padding:8px 14px;background:rgba(59,130,246,0.2);border:1px solid var(--accent);border-radius:8px;color:var(--accent);cursor:pointer;font-weight:600;white-space:nowrap;transition:0.2s}
+.client-cat-btn:hover{background:var(--accent);color:#000}
+.search-bar{width:100%;padding:14px;background:rgba(31,41,55,0.8);border:2px solid var(--accent);border-radius:12px;color:var(--text);font-size:1rem;margin-bottom:15px}
+.search-bar:focus{box-shadow:0 0 0 3px rgba(0,212,255,0.2)}
+.highlight{border:2px solid var(--warning)!important;box-shadow:0 0 15px rgba(251,191,36,0.4)}
 </style>
 </head>
 <body>
@@ -200,7 +209,11 @@
 
 <div id="clientView" style="display:none">
   <header><h1>TWINZ SERVICES</h1><p>Browse All 7 Categories</p></header>
-  <div class="container" id="clientContent"></div>
+  <div class="container">
+    <input type="text" id="clientSearch" class="search-bar" placeholder="Search: BMW Engine, Diagnostics, Website..." onkeyup="searchClient()"> <!-- NEW -->
+    <div id="clientCatNav" class="client-cat-nav"></div> <!-- NEW -->
+    <div id="clientContent"></div>
+  </div>
 </div>
 
 <script>
@@ -280,7 +293,34 @@ function logout(){
 function enterClientMode(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('clientView').style.display='block';
+  renderClientNav(); // NEW
   renderClient();
+}
+
+function scrollToCategory(catId){ // NEW
+  document.getElementById('cat-'+catId).scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function renderClientNav(){ // NEW
+  const nav = CATEGORIES.filter(c=>!c.outOfStock).map(c=>`
+    <div class="client-cat-btn" onclick="scrollToCategory('${c.id}')">${c.name}</div>
+  `).join('');
+  document.getElementById('clientCatNav').innerHTML = nav;
+}
+
+function searchClient(){ // NEW
+  const query = document.getElementById('clientSearch').value.toLowerCase();
+  const cards = document.querySelectorAll('#clientContent.card');
+  cards.forEach(card=>{
+    const text = card.innerText.toLowerCase();
+    if(query === '' || text.includes(query)){
+      card.style.display = 'block';
+      if(query!== '') card.classList.add('highlight'); else card.classList.remove('highlight');
+    } else {
+      card.style.display = 'none';
+      card.classList.remove('highlight');
+    }
+  });
 }
 
 function renderTabs(){
@@ -453,7 +493,7 @@ function copyLink(){
 
 function renderClient(){
   let html = CATEGORIES.filter(c=>!c.outOfStock).map(cat=>`
-    <div class="card">
+    <div class="card" id="cat-${cat.id}"> <!-- NEW ID -->
       <h3>${cat.name}</h3>
       <p>${cat.desc}</p>
       ${cat.products.length>0?`<h4 style="margin-top:10px;color:var(--accent)">Products: ${cat.products.length}</h4>`:''}
