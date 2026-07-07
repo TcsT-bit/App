@@ -18,7 +18,7 @@
     color:var(--text);padding-bottom:80px;animation:bgShift 20s ease infinite alternate;
   }
   @keyframes bgShift{0%{background-position:0% 0%,0% 0%}100%{background-position:100% 100%,0% 0%}}
-  
+
   header{
     background:linear-gradient(135deg,var(--accent2),var(--accent));
     padding:24px 20px;text-align:center;position:relative;overflow:hidden;
@@ -32,10 +32,10 @@
   @keyframes shine{0%{transform:translateX(-100%) rotate(45deg)}100%{transform:translateX(100%) rotate(45deg)}}
   header h1{font-size:2rem;font-weight:900;letter-spacing:-0.5px;text-shadow:0 2px 10px rgba(0,0,0,0.3)}
   header p{color:#fff;opacity:0.95;font-size:0.95rem;font-weight:500}
-  
+
 .container{max-width:1100px;margin:20px auto;padding:0 15px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:15px}
- 
+
 .card{
     background:rgba(17,24,39,0.7);
     backdrop-filter: blur(12px);
@@ -46,45 +46,46 @@
     animation:fadeInUp 0.5s ease;
   }
   @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
- .card:hover{transform:translateY(-4px);box-shadow:var(--glow),0 12px 40px rgba(0,0,0,0.4);border-color:var(--accent)}
-  
- .card.out-of-stock{opacity:0.6;border-color:var(--danger)}
- .card.out-of-stock::after{
+.card:hover{transform:translateY(-4px);box-shadow:var(--glow),0 12px 40px rgba(0,0,0,0.4);border-color:var(--accent)}
+
+.card.out-of-stock{opacity:0.6;border-color:var(--danger)}
+.card.out-of-stock::after{
     content:'OUT OF STOCK';position:absolute;top:12px;right:12px;
     background:linear-gradient(135deg,var(--danger),#dc2626);
     color:#fff;padding:6px 10px;border-radius:8px;font-size:0.7rem;font-weight:900;
     box-shadow:0 4px 12px rgba(239,68,68,0.4);animation:pulse 2s infinite;
   }
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
-  
- .card h3{
+
+.card h3{
     color:var(--accent);margin-bottom:10px;font-size:1.3rem;
     background:linear-gradient(90deg,var(--accent),var(--accent2));
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
   }
- .price{
+.price{
     color:var(--warning);font-weight:800;font-size:1.4rem;margin:10px 0;
     text-shadow:0 0 10px rgba(251,191,36,0.3);
   }
-  
- .btn{
+
+.btn{
     background:linear-gradient(135deg,var(--accent2),var(--accent));
     color:#fff;border:none;padding:12px 18px;border-radius:10px;
     cursor:pointer;font-weight:700;width:100%;margin-top:10px;
     box-shadow:0 4px 15px rgba(59,130,246,0.3);
     transition: all 0.2s ease;position:relative;overflow:hidden;
   }
- .btn::before{
+.btn::before{
     content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
     background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
     transition:0.5s;
   }
- .btn:hover::before{left:100%}
- .btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(59,130,246,0.5)}
- .btn:active{transform:translateY(0)}
- .btn.secondary{background:linear-gradient(135deg,var(--accent),#06b6d4);color:#000}
- .btn.danger{background:linear-gradient(135deg,var(--danger),#dc2626)}
-  
+.btn:hover::before{left:100%}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(59,130,246,0.5)}
+.btn:active{transform:translateY(0)}
+.btn.secondary{background:linear-gradient(135deg,var(--accent),#06b6d4);color:#000}
+.btn.danger{background:linear-gradient(135deg,var(--danger),#dc2626)}
+.btn.small{width:auto;padding:6px 12px;font-size:0.8rem}
+
   input,textarea,select{
     width:100%;padding:12px;background:rgba(31,41,55,0.6);
     border:1px solid rgba(59,130,246,0.3);border-radius:10px;color:var(--text);margin:6px 0;
@@ -93,55 +94,61 @@
   input:focus,textarea:focus{
     outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,255,0.1)
   }
-  
- .admin-bar{
+
+.admin-bar{
     background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);
     border-bottom:2px solid var(--accent);padding:12px;
     display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
     position:sticky;top:0;z-index:100;
   }
- .role-badge{
+.role-badge{
     padding:6px 12px;border-radius:20px;font-size:0.85rem;font-weight:800;
     box-shadow:0 4px 12px rgba(0,0,0,0.3);
   }
- .CEO{background:linear-gradient(135deg,#ef4444,#dc2626)}
- .Manager{background:linear-gradient(135deg,#3b82f6,#2563eb)}
- .Sales{background:linear-gradient(135deg,#10b981,#059669)}
- .Reception{background:linear-gradient(135deg,#f59e0b,#d97706)}
-  
- .login-screen{text-align:center;padding:60px 20px;animation:fadeInUp 0.6s ease}
- .img-preview{
+.CEO{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.Manager{background:linear-gradient(135deg,#3b82f6,#2563eb)}
+.Sales{background:linear-gradient(135deg,#10b981,#059669)}
+.Reception{background:linear-gradient(135deg,#f59e0b,#d97706)}
+
+.login-screen{text-align:center;padding:60px 20px;animation:fadeInUp 0.6s ease}
+.img-preview{
     width:100%;max-height:180px;object-fit:cover;border-radius:10px;margin-top:10px;
     border:2px solid rgba(59,130,246,0.3);transition:0.3s;
   }
- .img-preview:hover{border-color:var(--accent);box-shadow:var(--glow)}
-  
- .nav-tabs{
+.img-preview:hover{border-color:var(--accent);box-shadow:var(--glow)}
+
+  /* NEW HUB GALLERY */
+ .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px}
+ .gallery-item{position:relative;border-radius:10px;overflow:hidden;border:2px solid rgba(59,130,246,0.3)}
+ .gallery-item img{width:100%;height:120px;object-fit:cover;display:block}
+ .gallery-item.del-btn{position:absolute;top:4px;right:4px;background:var(--danger);border:none;color:#fff;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:0.8rem}
+
+.nav-tabs{
     display:flex;gap:10px;overflow-x:auto;padding:12px 0;
     scrollbar-width:none;
   }
- .nav-tabs::-webkit-scrollbar{display:none}
- .tab{
+.nav-tabs::-webkit-scrollbar{display:none}
+.tab{
     padding:10px 16px;background:rgba(31,41,55,0.6);border:1px solid rgba(59,130,246,0.2);
     border-radius:10px;cursor:pointer;white-space:nowrap;font-weight:600;
     transition: all 0.2s ease;backdrop-filter:blur(4px);
   }
- .tab:hover{background:rgba(59,130,246,0.2)}
- .tab.active{
+.tab:hover{background:rgba(59,130,246,0.2)}
+.tab.active{
     background:linear-gradient(135deg,var(--accent2),var(--accent));
     border-color:var(--accent);box-shadow:0 4px 15px rgba(59,130,246,0.4)
   }
-  
- .footer{text-align:center;color:var(--muted);font-size:0.85rem;padding:30px 20px}
- .share-link{
+
+.footer{text-align:center;color:var(--muted);font-size:0.85rem;padding:30px 20px}
+.share-link{
     background:rgba(31,41,55,0.6);padding:12px;border-radius:10px;
     word-break:break-all;font-size:0.9rem;border:1px solid rgba(59,130,246,0.3);
   }
- .toggle-switch{display:flex;align-items:center;gap:10px;margin:12px 0}
- .toggle-switch input{width:20px;height:20px;accent-color:var(--accent)}
- .manual-upload{display:flex;gap:8px}
- .manual-upload input{flex:1}
-  
+.toggle-switch{display:flex;align-items:center;gap:10px;margin:12px 0}
+.toggle-switch input{width:20px;height:20px;accent-color:var(--accent)}
+.manual-upload{display:flex;gap:8px}
+.manual-upload input{flex:1}
+
   ul{list-style:none;padding-left:0}
   ul li{padding:4px 0;padding-left:20px;position:relative}
   ul li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
@@ -192,46 +199,46 @@
 <script>
 const CATEGORIES = [
   {
-    id:'diagnostics', name:'Vehicle Diagnostics', 
+    id:'diagnostics', name:'Vehicle Diagnostics',
     desc:'All Brand Diagnostics Software. JLR, VW, AUDI, BENZ, BMW, TOYOTA, ISUZU, FORD, MAZDA, NISSAN + more',
     features:['Full System Scan','DTC Clear','Service Reset','DPF Regen','EPB','SAS','Key Programming','Twinz Master Scanner V25'],
-    price:'From R450', outOfStock:false, image:''
+    price:'From R450', outOfStock:false, images:[]
   },
   {
     id:'internet', name:'Wireless Internet',
     desc:'Unlimited Fibre, LTE, Installation, Business WiFi, Router Sales, 24/7 Support',
     features:['Unlimited Data','Fast Installation','Business Packages'],
-    price:'From R350/month', outOfStock:false, image:''
+    price:'From R350/month', outOfStock:false, images:[]
   },
   {
     id:'web', name:'Web Development',
     desc:'Business Websites, Landing Pages, E-commerce, Portfolio Sites',
     features:['Mobile-first','SEO','Hosting Setup'],
-    price:'From R3000', note:'7-14 Days Delivery', outOfStock:false, image:''
+    price:'From R3000', note:'7-14 Days Delivery', outOfStock:false, images:[]
   },
   {
     id:'app', name:'App Development',
     desc:'Android + iOS Apps, Business Apps, Admin Portals, Booking Systems',
     features:['React','Flutter','Firebase','ALL PERMISSIONS GRANTED'],
-    price:'From R5000', note:'Custom quotes', outOfStock:false, image:''
+    price:'From R5000', note:'Custom quotes', outOfStock:false, images:[]
   },
   {
     id:'parts', name:'Genuine Vehicle Parts',
     desc:'Engines, Gearboxes, Suspension, Electronics',
     features:['BMW','BENZ','AUDI','VW','JAGUAR','LAND ROVER + MORE'],
-    price:'Quote on Request', outOfStock:false, image:''
+    price:'Quote on Request', outOfStock:false, images:[]
   },
   {
     id:'workshop', name:'Workshop Partnerships',
     desc:'Supply parts to garages and workshops nationwide',
     features:['Fleet diagnostics','Bulk pricing','Nationwide SA'],
-    price:'Contact for Rates', outOfStock:false, image:''
+    price:'Contact for Rates', outOfStock:false, images:[]
   },
   {
     id:'food', name:'Food Supply',
     desc:'Wholesale food supply for businesses, restaurants and events',
     features:['Bulk Orders','Fresh Produce','Nationwide Delivery','Custom Quotes'],
-    price:'Quote on Request', outOfStock:false, image:''
+    price:'Quote on Request', outOfStock:false, images:[]
   }
 ];
 
@@ -285,40 +292,58 @@ function toggleStock(id){
 function saveManualImage(id){
   const input = document.getElementById('manual'+id);
   const cat = CATEGORIES.find(c=>c.id===id);
-  cat.image = input.value;
-  document.getElementById('preview'+id).src = input.value;
-  document.getElementById('preview'+id).style.display='block';
-  alert('Image URL Saved');
+  if(input.value.trim()){
+    cat.images.push(input.value.trim());
+    input.value='';
+    renderContent();
+  }
+}
+
+function deleteImage(catId, index){
+  CATEGORIES.find(c=>c.id===catId).images.splice(index,1);
+  renderContent();
+}
+
+function renderGallery(cat){
+  if(cat.images.length===0) return '<p style="color:var(--muted)">No images yet. Upload to build your hub.</p>';
+  return `<div class="gallery-grid">${cat.images.map((img,i)=>`
+    <div class="gallery-item">
+      <img src="${img}">
+      ${currentRole!=='Reception'?`<button class="del-btn" onclick="deleteImage('${cat.id}',${i})">×</button>`:''}
+    </div>
+  `).join('')}</div>`;
 }
 
 function renderContent(){
   const cat = CATEGORIES[currentTab];
   let html = `<div class="card ${cat.outOfStock?'out-of-stock':''}">
     <h3>${cat.name}</h3>
-    ${cat.image?`<img src="${cat.image}" class="img-preview">`:''}
+    ${cat.images[0]?`<img src="${cat.images[0]}" class="img-preview">`:''}
     <p>${cat.desc}</p>
     <ul>${cat.features.map(f=>`<li>${f}</li>`).join('')}</ul>
     <div class="price">${cat.price}</div>
     ${cat.note?`<p style="color:var(--muted);font-size:0.9rem">${cat.note}</p>`:''}
-    
+
+    <h4 style="margin-top:16px">Job Gallery Hub - ${cat.images.length} Images</h4>
+    ${renderGallery(cat)}
+
     ${currentRole!=='Reception'?`
-    <h4 style="margin-top:12px">Upload Image for ${cat.name}</h4>
+    <h4 style="margin-top:12px">Upload New Image</h4>
     <input type="file" id="file${cat.id}" accept="image/*">
     <button class="btn" onclick="uploadToCatbox('${cat.id}')">Upload to Catbox.moe</button>
-    
+
     <h4 style="margin-top:12px">Or Paste Catbox.moe Link Manually</h4>
     <div class="manual-upload">
-      <input type="text" id="manual${cat.id}" placeholder="https://files.catbox.moe/xxxxxx.jpg" value="${cat.image}">
-      <button class="btn" style="width:auto" onclick="saveManualImage('${cat.id}')">Save</button>
+      <input type="text" id="manual${cat.id}" placeholder="https://files.catbox.moe/xxxxxx.jpg">
+      <button class="btn" style="width:auto" onclick="saveManualImage('${cat.id}')">Add</button>
     </div>
-    <img id="preview${cat.id}" class="img-preview" style="display:${cat.image?'block':'none'}" src="${cat.image}">
     `:''}
-    
+
     <h4 style="margin-top:12px">Send Client Request</h4>
     <textarea id="msg${cat.id}" placeholder="Tell us what you need... Vehicle make/model for parts"></textarea>
     <button class="btn secondary" onclick="sendWhatsApp('${cat.id}')">Send WhatsApp</button>
   </div>`;
-  
+
   if(currentRole==='CEO' || currentRole==='Manager'){
     html += `<div class="card">
       <h3>Admin Controls - ${cat.name}</h3>
@@ -331,7 +356,7 @@ function renderContent(){
       <button class="btn">Save Changes</button>
     </div>`;
   }
-  
+
   document.getElementById('content').innerHTML = html;
 }
 
@@ -341,14 +366,13 @@ async function uploadToCatbox(id){
   const formData = new FormData();
   formData.append('reqtype','fileupload');
   formData.append('fileToUpload', fileInput.files[0]);
-  
+
   try{
     const res = await fetch('https://catbox.moe/user/api.php',{method:'POST',body:formData});
     const url = await res.text();
-    document.getElementById('preview'+id).src = url;
-    document.getElementById('preview'+id).style.display='block';
-    document.getElementById('manual'+id).value = url;
-    CATEGORIES.find(c=>c.id===id).image = url;
+    CATEGORIES.find(c=>c.id===id).images.push(url);
+    fileInput.value='';
+    renderContent();
     alert('Uploaded: '+url);
   }catch(e){ alert('Upload failed. Check connection.'); }
 }
@@ -375,19 +399,20 @@ function copyLink(){
 function renderClient(){
   let html = CATEGORIES.filter(c=>!c.outOfStock).map(cat=>`
     <div class="card">
-      ${cat.image?`<img src="${cat.image}" class="img-preview">`:''}
+      ${cat.images[0]?`<img src="${cat.images[0]}" class="img-preview">`:''}
       <h3>${cat.name}</h3>
       <p>${cat.desc}</p>
       <div class="price">${cat.price}</div>
+      ${cat.images.length>1?`<p style="color:var(--muted);font-size:0.85rem">${cat.images.length} job photos in gallery</p>`:''}
       <textarea placeholder="Your request for ${cat.name}"></textarea>
       <button class="btn" onclick="alert('Request sent to TWINZ')">Request Quote</button>
     </div>
   `).join('');
-  
+
   if(CATEGORIES.filter(c=>!c.outOfStock).length===0){
     html = `<div class="card"><h3>All Services Temporarily Unavailable</h3><p>Please contact us directly.</p></div>`;
   }
-  
+
   html += `<div class="card">
     <h3>Our Details</h3>
     <p><b>Email:</b> ${CONTACT.email}</p>
@@ -399,7 +424,7 @@ function renderClient(){
     <button class="btn secondary" onclick="window.open('https://wa.me/27698949596')">WhatsApp Thabang</button>
   </div>
   <div class="footer">© 2026 TWINZ COOPERATE SERVICES PTY LTD | BEST & QUALITY SERVICES</div>`;
-  
+
   document.getElementById('clientContent').innerHTML = html;
 }
 
