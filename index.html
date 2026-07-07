@@ -7,31 +7,38 @@
 <style>
   :root {
     --bg:#0a0e1a; --card:#111827; --accent:#00d4ff; --accent2:#3b82f6;
-    --text:#e5e7eb; --muted:#9ca3af; --success:#10b981; --warning:#fbbf24;
+    --text:#e5e7eb; --muted:#9ca3af; --success:#10b981; --warning:#fbbf24; --danger:#ef4444;
   }
   *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
   body{background:var(--bg);color:var(--text);padding-bottom:80px}
   header{background:linear-gradient(135deg,var(--accent2),var(--accent));padding:20px;text-align:center}
   header h1{font-size:1.8rem;font-weight:800}
   header p{color:#fff;opacity:0.9;font-size:0.9rem}
- .container{max-width:1100px;margin:20px auto;padding:0 15px}
- .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:15px}
- .card{background:var(--card);border:1px solid #1f2937;border-radius:12px;padding:18px}
- .card h3{color:var(--accent);margin-bottom:8px}
- .price{color:var(--warning);font-weight:700;font-size:1.2rem;margin:8px 0}
- .btn{background:var(--accent2);color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;margin-top:8px}
- .btn.secondary{background:var(--accent);color:#000}
+.container{max-width:1100px;margin:20px auto;padding:0 15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:15px}
+.card{background:var(--card);border:1px solid #1f2937;border-radius:12px;padding:18px;position:relative}
+.card.out-of-stock{opacity:0.5;border-color:var(--danger)}
+.card.out-of-stock::after{content:'OUT OF STOCK';position:absolute;top:10px;right:10px;background:var(--danger);color:#fff;padding:4px 8px;border-radius:6px;font-size:0.7rem;font-weight:800}
+.card h3{color:var(--accent);margin-bottom:8px}
+.price{color:var(--warning);font-weight:700;font-size:1.2rem;margin:8px 0}
+.btn{background:var(--accent2);color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;margin-top:8px}
+.btn.secondary{background:var(--accent);color:#000}
+.btn.danger{background:var(--danger)}
   input,textarea,select{width:100%;padding:10px;background:#1f2937;border:1px solid #374151;border-radius:8px;color:var(--text);margin:6px 0}
- .admin-bar{background:#000;border-bottom:2px solid var(--accent);padding:10px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
- .role-badge{padding:4px 10px;border-radius:20px;font-size:0.8rem;font-weight:700}
- .CEO{background:#ef4444}.Manager{background:#3b82f6}.Sales{background:#10b981}.Reception{background:#f59e0b}
- .login-screen{text-align:center;padding:40px 20px}
- .img-preview{width:100%;max-height:150px;object-fit:cover;border-radius:8px;margin-top:8px}
- .nav-tabs{display:flex;gap:8px;overflow-x:auto;padding:10px 0}
- .tab{padding:8px 14px;background:#1f2937;border-radius:8px;cursor:pointer;white-space:nowrap}
- .tab.active{background:var(--accent2)}
- .footer{text-align:center;color:var(--muted);font-size:0.8rem;padding:20px}
- .share-link{background:#1f2937;padding:10px;border-radius:8px;word-break:break-all;font-size:0.85rem}
+.admin-bar{background:#000;border-bottom:2px solid var(--accent);padding:10px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.role-badge{padding:4px 10px;border-radius:20px;font-size:0.8rem;font-weight:700}
+.CEO{background:#ef4444}.Manager{background:#3b82f6}.Sales{background:#10b981}.Reception{background:#f59e0b}
+.login-screen{text-align:center;padding:40px 20px}
+.img-preview{width:100%;max-height:150px;object-fit:cover;border-radius:8px;margin-top:8px}
+.nav-tabs{display:flex;gap:8px;overflow-x:auto;padding:10px 0}
+.tab{padding:8px 14px;background:#1f2937;border-radius:8px;cursor:pointer;white-space:nowrap}
+.tab.active{background:var(--accent2)}
+.footer{text-align:center;color:var(--muted);font-size:0.8rem;padding:20px}
+.share-link{background:#1f2937;padding:10px;border-radius:8px;word-break:break-all;font-size:0.85rem}
+.toggle-switch{display:flex;align-items:center;gap:10px;margin:10px 0}
+.toggle-switch input{width:auto}
+.manual-upload{display:flex;gap:8px}
+.manual-upload input{flex:1}
 </style>
 </head>
 <body>
@@ -61,6 +68,11 @@
   </div>
 
   <div class="container">
+    <div id="shareLinkBox" style="display:none;margin-bottom:15px" class="card">
+      <h4>Client Link Ready</h4>
+      <div class="share-link" id="shareLink"></div>
+      <button class="btn" onclick="copyLink()">Copy Link</button>
+    </div>
     <div class="nav-tabs" id="tabs"></div>
     <div id="content"></div>
   </div>
@@ -77,43 +89,43 @@ const CATEGORIES = [
     id:'diagnostics', name:'Vehicle Diagnostics', 
     desc:'All Brand Diagnostics Software. JLR, VW, AUDI, BENZ, BMW, TOYOTA, ISUZU, FORD, MAZDA, NISSAN + more',
     features:['Full System Scan','DTC Clear','Service Reset','DPF Regen','EPB','SAS','Key Programming','Twinz Master Scanner V25'],
-    price:'From R450'
+    price:'From R450', outOfStock:false, image:''
   },
   {
     id:'internet', name:'Wireless Internet',
     desc:'Unlimited Fibre, LTE, Installation, Business WiFi, Router Sales, 24/7 Support',
     features:['Unlimited Data','Fast Installation','Business Packages'],
-    price:'From R350/month'
+    price:'From R350/month', outOfStock:false, image:''
   },
   {
     id:'web', name:'Web Development',
     desc:'Business Websites, Landing Pages, E-commerce, Portfolio Sites',
     features:['Mobile-first','SEO','Hosting Setup'],
-    price:'From R3000', note:'7-14 Days Delivery'
+    price:'From R3000', note:'7-14 Days Delivery', outOfStock:false, image:''
   },
   {
     id:'app', name:'App Development',
     desc:'Android + iOS Apps, Business Apps, Admin Portals, Booking Systems',
     features:['React','Flutter','Firebase','ALL PERMISSIONS GRANTED'],
-    price:'From R5000', note:'Custom quotes'
+    price:'From R5000', note:'Custom quotes', outOfStock:false, image:''
   },
   {
     id:'parts', name:'Genuine Vehicle Parts',
     desc:'Engines, Gearboxes, Suspension, Electronics',
     features:['BMW','BENZ','AUDI','VW','JAGUAR','LAND ROVER + MORE'],
-    price:'Quote on Request'
+    price:'Quote on Request', outOfStock:false, image:''
   },
   {
     id:'workshop', name:'Workshop Partnerships',
     desc:'Supply parts to garages and workshops nationwide',
     features:['Fleet diagnostics','Bulk pricing','Nationwide SA'],
-    price:'Contact for Rates'
+    price:'Contact for Rates', outOfStock:false, image:''
   },
   {
     id:'food', name:'Food Supply',
     desc:'Wholesale food supply for businesses, restaurants and events',
     features:['Bulk Orders','Fresh Produce','Nationwide Delivery','Custom Quotes'],
-    price:'Quote on Request'
+    price:'Quote on Request', outOfStock:false, image:''
   }
 ];
 
@@ -127,6 +139,7 @@ const CONTACT = {
 
 let currentRole = 'CEO';
 let currentTab = 0;
+let currentShareLink = '';
 
 function login(role){
   currentRole = role;
@@ -141,6 +154,7 @@ function login(role){
 function logout(){
   document.getElementById('app').style.display='none';
   document.getElementById('loginScreen').style.display='block';
+  document.getElementById('shareLinkBox').style.display='none';
 }
 
 function enterClientMode(){
@@ -156,10 +170,26 @@ function renderTabs(){
 
 function switchTab(i){ currentTab=i; renderTabs(); renderContent(); }
 
+function toggleStock(id){
+  const cat = CATEGORIES.find(c=>c.id===id);
+  cat.outOfStock =!cat.outOfStock;
+  renderContent();
+}
+
+function saveManualImage(id){
+  const input = document.getElementById('manual'+id);
+  const cat = CATEGORIES.find(c=>c.id===id);
+  cat.image = input.value;
+  document.getElementById('preview'+id).src = input.value;
+  document.getElementById('preview'+id).style.display='block';
+  alert('Image URL Saved');
+}
+
 function renderContent(){
   const cat = CATEGORIES[currentTab];
-  let html = `<div class="card">
+  let html = `<div class="card ${cat.outOfStock?'out-of-stock':''}">
     <h3>${cat.name}</h3>
+    ${cat.image?`<img src="${cat.image}" class="img-preview">`:''}
     <p>${cat.desc}</p>
     <ul>${cat.features.map(f=>`<li>• ${f}</li>`).join('')}</ul>
     <div class="price">${cat.price}</div>
@@ -169,7 +199,13 @@ function renderContent(){
     <h4 style="margin-top:12px">Upload Image for ${cat.name}</h4>
     <input type="file" id="file${cat.id}" accept="image/*">
     <button class="btn" onclick="uploadToCatbox('${cat.id}')">Upload to Catbox.moe</button>
-    <img id="preview${cat.id}" class="img-preview" style="display:none">
+    
+    <h4 style="margin-top:12px">Or Paste Catbox.moe Link Manually</h4>
+    <div class="manual-upload">
+      <input type="text" id="manual${cat.id}" placeholder="https://files.catbox.moe/xxxxxx.jpg" value="${cat.image}">
+      <button class="btn" style="width:auto" onclick="saveManualImage('${cat.id}')">Save</button>
+    </div>
+    <img id="preview${cat.id}" class="img-preview" style="display:${cat.image?'block':'none'}" src="${cat.image}">
     `:''}
     
     <h4 style="margin-top:12px">Send Client Request</h4>
@@ -177,11 +213,15 @@ function renderContent(){
     <button class="btn secondary" onclick="sendWhatsApp('${cat.id}')">Send WhatsApp</button>
   </div>`;
   
-  if(currentRole==='CEO'){
+  if(currentRole==='CEO' || currentRole==='Manager'){
     html += `<div class="card">
       <h3>Admin Controls - ${cat.name}</h3>
-      <input placeholder="Edit Price" value="${cat.price}">
+      <input placeholder="Edit Price" value="${cat.price}" onchange="cat.price=this.value">
       <textarea placeholder="Edit Description">${cat.desc}</textarea>
+      <div class="toggle-switch">
+        <input type="checkbox" id="stock${cat.id}" ${cat.outOfStock?'checked':''} onchange="toggleStock('${cat.id}')">
+        <label for="stock${cat.id}">Mark as Out of Stock</label>
+      </div>
       <button class="btn">Save Changes</button>
     </div>`;
   }
@@ -201,6 +241,8 @@ async function uploadToCatbox(id){
     const url = await res.text();
     document.getElementById('preview'+id).src = url;
     document.getElementById('preview'+id).style.display='block';
+    document.getElementById('manual'+id).value = url;
+    CATEGORIES.find(c=>c.id===id).image = url;
     alert('Uploaded: '+url);
   }catch(e){ alert('Upload failed. Check connection.'); }
 }
@@ -212,14 +254,22 @@ function sendWhatsApp(id){
 }
 
 function generateClientLink(){
-  const link = window.location.href + '#client';
-  alert('Client Link Copied!\n\n'+link+'\n\nShare this with clients. They will see all 7 modules to request quotes.');
-  navigator.clipboard.writeText(link);
+  const baseUrl = window.location.origin + window.location.pathname;
+  currentShareLink = baseUrl + '#client';
+  document.getElementById('shareLink').innerText = currentShareLink;
+  document.getElementById('shareLinkBox').style.display = 'block';
+  alert('Client Link Generated! Click Copy Link to share.');
+}
+
+function copyLink(){
+  navigator.clipboard.writeText(currentShareLink);
+  alert('Link Copied!');
 }
 
 function renderClient(){
-  let html = CATEGORIES.map(cat=>`
+  let html = CATEGORIES.filter(c=>!c.outOfStock).map(cat=>`
     <div class="card">
+      ${cat.image?`<img src="${cat.image}" class="img-preview">`:''}
       <h3>${cat.name}</h3>
       <p>${cat.desc}</p>
       <div class="price">${cat.price}</div>
@@ -227,6 +277,10 @@ function renderClient(){
       <button class="btn" onclick="alert('Request sent to TWINZ')">Request Quote</button>
     </div>
   `).join('');
+  
+  if(CATEGORIES.filter(c=>!c.outOfStock).length===0){
+    html = `<div class="card"><h3>All Services Temporarily Unavailable</h3><p>Please contact us directly.</p></div>`;
+  }
   
   html += `<div class="card">
     <h3>Our Details</h3>
@@ -247,4 +301,4 @@ function renderClient(){
 if(window.location.hash==='#client') enterClientMode();
 </script>
 </body>
-      </html>
+</html>
