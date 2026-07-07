@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TWINZ COOPERATE SERVICES - World Tier App</title>
+<style>
+  :root {
+    --bg:#0a0e1a; --card:#111827; --accent:#00d4ff; --accent2:#3b82f6;
+    --text:#e5e7eb; --muted:#9ca3af; --success:#10b981; --warning:#fbbf24;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
+  body{background:var(--bg);color:var(--text);padding-bottom:80px}
+  header{background:linear-gradient(135deg,var(--accent2),var(--accent));padding:20px;text-align:center}
+  header h1{font-size:1.8rem;font-weight:800}
+  header p{color:#fff;opacity:0.9;font-size:0.9rem}
+ .container{max-width:1100px;margin:20px auto;padding:0 15px}
+ .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:15px}
+ .card{background:var(--card);border:1px solid #1f2937;border-radius:12px;padding:18px}
+ .card h3{color:var(--accent);margin-bottom:8px}
+ .price{color:var(--warning);font-weight:700;font-size:1.2rem;margin:8px 0}
+ .btn{background:var(--accent2);color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;width:100%;margin-top:8px}
+ .btn.secondary{background:var(--accent);color:#000}
+  input,textarea,select{width:100%;padding:10px;background:#1f2937;border:1px solid #374151;border-radius:8px;color:var(--text);margin:6px 0}
+ .admin-bar{background:#000;border-bottom:2px solid var(--accent);padding:10px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+ .role-badge{padding:4px 10px;border-radius:20px;font-size:0.8rem;font-weight:700}
+ .CEO{background:#ef4444}.Manager{background:#3b82f6}.Sales{background:#10b981}.Reception{background:#f59e0b}
+ .login-screen{text-align:center;padding:40px 20px}
+ .img-preview{width:100%;max-height:150px;object-fit:cover;border-radius:8px;margin-top:8px}
+ .nav-tabs{display:flex;gap:8px;overflow-x:auto;padding:10px 0}
+ .tab{padding:8px 14px;background:#1f2937;border-radius:8px;cursor:pointer;white-space:nowrap}
+ .tab.active{background:var(--accent2)}
+ .footer{text-align:center;color:var(--muted);font-size:0.8rem;padding:20px}
+ .share-link{background:#1f2937;padding:10px;border-radius:8px;word-break:break-all;font-size:0.85rem}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>TWINZ COOPERATE SERVICES PTY LTD</h1>
+  <p>BEST & QUALITY SERVICES | We Supply Workshops & Garages Across SA</p>
+</header>
+
+<div id="loginScreen" class="login-screen">
+  <h2>Admin Login</h2>
+  <p style="color:var(--muted)">Select Role to Continue</p>
+  <div style="max-width:400px;margin:20px auto">
+    <button class="btn" onclick="login('CEO')">Login as CEO - Full Access</button>
+    <button class="btn" onclick="login('Manager')">Login as Manager</button>
+    <button class="btn" onclick="login('Sales')">Login as Sales</button>
+    <button class="btn" onclick="login('Reception')">Login as Reception</button>
+    <button class="btn secondary" onclick="enterClientMode()">Enter as Client</button>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <div class="admin-bar">
+    <span class="role-badge" id="roleBadge">CEO</span>
+    <button class="btn" style="width:auto" onclick="logout()">Logout</button>
+    <button class="btn secondary" style="width:auto" onclick="generateClientLink()">Generate Client Link</button>
+  </div>
+
+  <div class="container">
+    <div class="nav-tabs" id="tabs"></div>
+    <div id="content"></div>
+  </div>
+</div>
+
+<div id="clientView" style="display:none">
+  <header><h1>TWINZ SERVICES</h1><p>Request a Quote</p></header>
+  <div class="container" id="clientContent"></div>
+</div>
+
+<script>
+const CATEGORIES = [
+  {
+    id:'diagnostics', name:'Vehicle Diagnostics', 
+    desc:'All Brand Diagnostics Software. JLR, VW, AUDI, BENZ, BMW, TOYOTA, ISUZU, FORD, MAZDA, NISSAN + more',
+    features:['Full System Scan','DTC Clear','Service Reset','DPF Regen','EPB','SAS','Key Programming','Twinz Master Scanner V25'],
+    price:'From R450'
+  },
+  {
+    id:'internet', name:'Wireless Internet',
+    desc:'Unlimited Fibre, LTE, Installation, Business WiFi, Router Sales, 24/7 Support',
+    features:['Unlimited Data','Fast Installation','Business Packages'],
+    price:'From R350/month'
+  },
+  {
+    id:'web', name:'Web Development',
+    desc:'Business Websites, Landing Pages, E-commerce, Portfolio Sites',
+    features:['Mobile-first','SEO','Hosting Setup'],
+    price:'From R3000', note:'7-14 Days Delivery'
+  },
+  {
+    id:'app', name:'App Development',
+    desc:'Android + iOS Apps, Business Apps, Admin Portals, Booking Systems',
+    features:['React','Flutter','Firebase','ALL PERMISSIONS GRANTED'],
+    price:'From R5000', note:'Custom quotes'
+  },
+  {
+    id:'parts', name:'Genuine Vehicle Parts',
+    desc:'Engines, Gearboxes, Suspension, Electronics',
+    features:['BMW','BENZ','AUDI','VW','JAGUAR','LAND ROVER + MORE'],
+    price:'Quote on Request'
+  },
+  {
+    id:'workshop', name:'Workshop Partnerships',
+    desc:'Supply parts to garages and workshops nationwide',
+    features:['Fleet diagnostics','Bulk pricing','Nationwide SA'],
+    price:'Contact for Rates'
+  },
+  {
+    id:'food', name:'Food Supply',
+    desc:'Wholesale food supply for businesses, restaurants and events',
+    features:['Bulk Orders','Fresh Produce','Nationwide Delivery','Custom Quotes'],
+    price:'Quote on Request'
+  }
+];
+
+const CONTACT = {
+  email:'twinz.cooperate.services@gmail.com',
+  thabo:'068 254 7352',
+  thabang:'069 894 9596',
+  location:'Greater Tubatse, Limpopo',
+  hours:'Mon - Sat | 8am - 6pm'
+};
+
+let currentRole = 'CEO';
+let currentTab = 0;
+
+function login(role){
+  currentRole = role;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('roleBadge').className='role-badge '+role;
+  document.getElementById('roleBadge').innerText=role;
+  renderTabs();
+  renderContent();
+}
+
+function logout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='block';
+}
+
+function enterClientMode(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('clientView').style.display='block';
+  renderClient();
+}
+
+function renderTabs(){
+  const tabs = CATEGORIES.map((c,i)=>`<div class="tab ${i===currentTab?'active':''}" onclick="switchTab(${i})">${c.name}</div>`).join('');
+  document.getElementById('tabs').innerHTML = tabs;
+}
+
+function switchTab(i){ currentTab=i; renderTabs(); renderContent(); }
+
+function renderContent(){
+  const cat = CATEGORIES[currentTab];
+  let html = `<div class="card">
+    <h3>${cat.name}</h3>
+    <p>${cat.desc}</p>
+    <ul>${cat.features.map(f=>`<li>• ${f}</li>`).join('')}</ul>
+    <div class="price">${cat.price}</div>
+    ${cat.note?`<p style="color:var(--muted);font-size:0.9rem">${cat.note}</p>`:''}
+    
+    ${currentRole!=='Reception'?`
+    <h4 style="margin-top:12px">Upload Image for ${cat.name}</h4>
+    <input type="file" id="file${cat.id}" accept="image/*">
+    <button class="btn" onclick="uploadToCatbox('${cat.id}')">Upload to Catbox.moe</button>
+    <img id="preview${cat.id}" class="img-preview" style="display:none">
+    `:''}
+    
+    <h4 style="margin-top:12px">Send Client Request</h4>
+    <textarea id="msg${cat.id}" placeholder="Tell us what you need... Vehicle make/model for parts"></textarea>
+    <button class="btn secondary" onclick="sendWhatsApp('${cat.id}')">Send WhatsApp</button>
+  </div>`;
+  
+  if(currentRole==='CEO'){
+    html += `<div class="card">
+      <h3>Admin Controls - ${cat.name}</h3>
+      <input placeholder="Edit Price" value="${cat.price}">
+      <textarea placeholder="Edit Description">${cat.desc}</textarea>
+      <button class="btn">Save Changes</button>
+    </div>`;
+  }
+  
+  document.getElementById('content').innerHTML = html;
+}
+
+async function uploadToCatbox(id){
+  const fileInput = document.getElementById('file'+id);
+  if(!fileInput.files[0]){ alert('Select a file first'); return; }
+  const formData = new FormData();
+  formData.append('reqtype','fileupload');
+  formData.append('fileToUpload', fileInput.files[0]);
+  
+  try{
+    const res = await fetch('https://catbox.moe/user/api.php',{method:'POST',body:formData});
+    const url = await res.text();
+    document.getElementById('preview'+id).src = url;
+    document.getElementById('preview'+id).style.display='block';
+    alert('Uploaded: '+url);
+  }catch(e){ alert('Upload failed. Check connection.'); }
+}
+
+function sendWhatsApp(id){
+  const msg = document.getElementById('msg'+id).value || 'Hello TWINZ, I need assistance';
+  const url = `https://wa.me/27682547352?text=${encodeURIComponent(msg)}`;
+  window.open(url,'_blank');
+}
+
+function generateClientLink(){
+  const link = window.location.href + '#client';
+  alert('Client Link Copied!\n\n'+link+'\n\nShare this with clients. They will see all 7 modules to request quotes.');
+  navigator.clipboard.writeText(link);
+}
+
+function renderClient(){
+  let html = CATEGORIES.map(cat=>`
+    <div class="card">
+      <h3>${cat.name}</h3>
+      <p>${cat.desc}</p>
+      <div class="price">${cat.price}</div>
+      <textarea placeholder="Your request for ${cat.name}"></textarea>
+      <button class="btn" onclick="alert('Request sent to TWINZ')">Request Quote</button>
+    </div>
+  `).join('');
+  
+  html += `<div class="card">
+    <h3>Our Details</h3>
+    <p><b>Email:</b> ${CONTACT.email}</p>
+    <p><b>Thabo:</b> ${CONTACT.thabo}</p>
+    <p><b>Thabang:</b> ${CONTACT.thabang}</p>
+    <p><b>Location:</b> ${CONTACT.location}</p>
+    <p><b>Hours:</b> ${CONTACT.hours}</p>
+    <button class="btn" onclick="window.open('https://wa.me/27682547352')">WhatsApp Thabo</button>
+    <button class="btn secondary" onclick="window.open('https://wa.me/27698949596')">WhatsApp Thabang</button>
+  </div>
+  <div class="footer">© 2026 TWINZ COOPERATE SERVICES PTY LTD | BEST & QUALITY SERVICES</div>`;
+  
+  document.getElementById('clientContent').innerHTML = html;
+}
+
+// Auto-open client view if #client in URL
+if(window.location.hash==='#client') enterClientMode();
+</script>
+</body>
+      </html>
